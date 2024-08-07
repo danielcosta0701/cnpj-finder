@@ -2,12 +2,13 @@ import { createContext, useState, ReactNode, useContext } from 'react';
 
 interface StepContextType {
   currentStep: number;
+  setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
   nextStep: () => void;
   prevStep: () => void;
 }
 
 interface StepProviderProps {
-  stepsArray: [];
+  stepsArray: unknown[];
   children: ReactNode;
 }
 
@@ -18,7 +19,7 @@ export const useStep = () => {
 };
 
 export function StepProvider({ stepsArray, children }: StepProviderProps) {
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState<number>(0);
 
   const nextStep = () => {
     setCurrentStep(prevStep => {
@@ -39,7 +40,7 @@ export function StepProvider({ stepsArray, children }: StepProviderProps) {
   };
 
   return (
-    <StepContext.Provider value={{currentStep, prevStep, nextStep}}>
+    <StepContext.Provider value={{currentStep, setCurrentStep, prevStep, nextStep}}>
       {children}
     </StepContext.Provider>
   );

@@ -1,9 +1,9 @@
 import './App.css'
 import Finder from './finder/steps/Finder'
 import FinderResult from './finder/steps/FinderResult'
+import { StepProvider } from './contexts/StepContext'
 
 function App() {
-
   const finderSteps = [
     {
       id: 1,
@@ -18,11 +18,11 @@ function App() {
   ]
 
   return (
-    <>
+    <StepProvider stepsArray={finderSteps}>
       <div>
         {/* {finderSteps[currentStep]} */}
       </div>
-    </>
+    </StepProvider>
   )
 }
 
