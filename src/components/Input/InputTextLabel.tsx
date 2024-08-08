@@ -1,15 +1,17 @@
-import { ReactNode, HTMLProps } from 'react';
+import { HTMLProps } from 'react';
 
 interface InputTextLabelProps extends HTMLProps<HTMLLabelElement> {
-    children: ReactNode;
+  label: string;
+  htmlFor: string;
 }
 
-export default function InputTextLabel({ children, ...props }: InputTextLabelProps) {
-    return (
-        <label
-            {...props}
-        >
-            {children}
-        </label>
-    );
+export default function InputTextLabel({ label, htmlFor, ...props }: InputTextLabelProps) {
+  return (
+    <label
+      htmlFor={htmlFor}
+      {...props}
+    >
+      {label}
+    </label>
+  );
 }

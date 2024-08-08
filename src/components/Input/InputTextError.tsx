@@ -1,15 +1,18 @@
-import { ReactNode, HTMLProps } from 'react';
+import { HTMLProps } from 'react';
+import { FieldError } from 'react-hook-form';
 
 interface InputTextErrorProps extends HTMLProps<HTMLSpanElement> {
-    children: ReactNode;
+  error?: FieldError;
 }
 
-export default function InputTextError({ children, ...props }: InputTextErrorProps) {
-    return (
-        <span
-            {...props}
-        >
-            {children}
+export default function InputTextError({ error, ...props }: InputTextErrorProps) {
+  return (
+    <>
+      {error && (
+        <span {...props}>
+          {error.message}
         </span>
-    );
+      )}
+    </>
+  );
 }

@@ -1,28 +1,44 @@
 import './App.css'
 import Finder from './finder/steps/Finder'
 import FinderResult from './finder/steps/FinderResult'
-import { StepProvider } from './contexts/StepContext'
+import useSteps from './hooks/useSteps'
+import { useLoading } from './hooks/useLoading'
+import { CompanyProvider } from './contexts/Company/CompanyProvider'
+import { BarLoader } from 'react-spinners'
 
 function App() {
+  const { isLoading } = useLoading();
+
   const finderSteps = [
     {
       id: 1,
       stepName: "Finder",
-      content: <Finder />,
+      component: Finder,
     },
     {
       id: 2,
       stepName: "Finder result",
-      content: <FinderResult />,
+      component: FinderResult,
     }
-  ]
+  ];
+
+  const { currentStep, nextStep, prevStep } = useSteps({ steps: finderSteps, initialStep: 0 });
+
+  const FinderCurrentStep = finderSteps[currentStep].component;
 
   return (
-    <StepProvider stepsArray={finderSteps}>
       <div>
-        {/* {finderSteps[currentStep]} */}
+        <CompanyProvider>
+          { isLoading ? (
+            <BarLoader />
+          ) : (
+            <FinderCurrentStep
+              nextStep={nextStep}
+              prevStep={prevStep}
+            />
+          )}
+        </CompanyProvider>
       </div>
-    </StepProvider>
   )
 }
 
