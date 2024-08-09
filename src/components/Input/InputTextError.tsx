@@ -2,15 +2,15 @@ import { HTMLProps } from 'react';
 import { FieldError } from 'react-hook-form';
 
 interface InputTextErrorProps extends HTMLProps<HTMLSpanElement> {
-  error?: FieldError;
+  errors?: FieldError;
 }
 
-export default function InputTextError({ error, ...props }: InputTextErrorProps) {
+export default function InputTextError({ errors, ...props }: InputTextErrorProps) {
   return (
     <>
-      {error && (
+      {errors && (
         <span {...props}>
-          {error.message}
+          {errors.message}
         </span>
       )}
     </>

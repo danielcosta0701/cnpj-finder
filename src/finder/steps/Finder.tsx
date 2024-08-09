@@ -1,8 +1,11 @@
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useEffect } from 'react';
+import { useForm, SubmitHandler, get } from 'react-hook-form';
 import { Button } from "../../components/Button/Button";
 import { InputText } from "../../components/Input/InputText";
-import InputTextField from "../../components/Input/InputTextField";
 import { useCompany } from '../../hooks/useCompany';
+import { useLoading } from '../../hooks/useLoading';
+import { cnpjValidator } from '../../utils/cnpjValidator';
+import { getCompany } from '../../utils/getCompany';
 
 interface FinderProps {
   nextStep: () => void;
@@ -10,25 +13,21 @@ interface FinderProps {
 }
 
 interface FormValues {
-  name: string;
+  cnpj: string;
 }
 
-// melhorar tipagem dos sócios
-
 export default function Finder({ nextStep, prevStep }: FinderProps) {
-  const { register, handleSubmit, formState: { errors } } = useForm<FormValues>();
+  const { register, handleSubmit, formState: { errors, isValid } } = useForm<FormValues>({
+    mode: "onSubmit",
+  });
+  const { isLoading, setIsLoading } = useLoading();
   const { setCompany } = useCompany();
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    alert(data.name);
     try {
-      const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${data.name}`);
-
-      if (!response.ok) {
-        throw new Error(`Erro na resposta da API: ${response.statusText}`);
-      }
-
-      const cnpjData = await response.json();
+      setIsLoading(true);
+      
+      const cnpjData = await getCompany(data.cnpj);
 
       const obj = {
         companyName: cnpjData.nome_fantasia,
@@ -54,30 +53,46 @@ export default function Finder({ nextStep, prevStep }: FinderProps) {
         }))
       };
       
-      setCompany((prevState) => ({ ...prevState, ...obj }))
+      setCompany((prevState) => ({ ...prevState, ...obj }));
 
       nextStep();
     } catch (error) {
       console.error('Erro ao buscar dados:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (isValid) {
+      handleSubmit(onSubmit)();
+    }
+  }, [isValid]);
 
   return (
     <div>
       <h1>Finder</h1>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <InputTextField>
-          <InputText.Label label="Nome:" htmlFor="name" />
+        <InputText.Field>
+          <InputText.Label label="Nome:" htmlFor="cnpj" />
           <InputText.Root
             placeholder="Digite o CNPJ"
-            register={{...register('name', { required: 'Nome é obrigatório' })}}
+            mask="99.999.999/9999-99"
+            register={{...register('cnpj', {
+              required: "CNPJ é obrigatório",
+              setValueAs: value => value.replace(/\D/g, ''),
+              validate: {
+                length: value => value.length === 14 || 'CNPJ deve ter exatamente 14 dígitos',
+                isCnpjValid: value => cnpjValidator(value) || 'CNPJ inválido',
+              },
+            })}}
           />
-          {errors.name && <InputText.Error>{errors.name.message}</InputText.Error>}
-        </InputTextField>
+          <InputText.Error errors={errors.cnpj} />
+        </InputText.Field>
 
-        <Button.Root type="submit">
-          <Button.Text>Submeter</Button.Text>
+        <Button.Root type="submit" isLoadingButton={true}>
+          <Button.Text>Procurar</Button.Text>
         </Button.Root>
 
         <Button.Root type="button" onClick={prevStep}>

@@ -3,7 +3,7 @@ import { useState } from 'react';
 interface Step {
   id: number;
   stepName: string;
-  component: unknown; // melhorar tipagem
+  component: unknown;
 }
 
 interface UseStepsProps {

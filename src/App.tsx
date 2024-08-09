@@ -4,7 +4,6 @@ import FinderResult from './finder/steps/FinderResult'
 import useSteps from './hooks/useSteps'
 import { useLoading } from './hooks/useLoading'
 import { CompanyProvider } from './contexts/Company/CompanyProvider'
-import { BarLoader } from 'react-spinners'
 
 function App() {
   const { isLoading } = useLoading();
@@ -29,17 +28,13 @@ function App() {
   return (
       <div>
         <CompanyProvider>
-          { isLoading ? (
-            <BarLoader />
-          ) : (
             <FinderCurrentStep
               nextStep={nextStep}
               prevStep={prevStep}
             />
-          )}
         </CompanyProvider>
       </div>
-  )
+  );
 }
 
 export default App
